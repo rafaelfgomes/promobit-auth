@@ -57,26 +57,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users", name="store_user", methods={"POST"})
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            $data = $request->request->all();
-
-            $userCreated = $this->userService->store($data);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage(), Response::HTTP_BAD_REQUEST]);
-        }
-
-        if (!$userCreated) {
-            throw new ErrorException('Erro ao criar o usuário');
-        }
-
-        return new JsonResponse($userCreated, Response::HTTP_CREATED);
-    }
-
-    /**
      * @Route("/users/{id}", name="update_user", methods={"PUT", "PATCH"})
      */
     public function update(Request $request, int $id): JsonResponse

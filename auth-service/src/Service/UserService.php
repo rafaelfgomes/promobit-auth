@@ -28,13 +28,6 @@ class UserService
         return $user;
     }
 
-    public function store(array $data): array
-    {
-        $userCreated = $this->userRepository->storeUser($data);
-
-        return $userCreated;
-    }
-
     public function update(array $data, int $id): array
     {
         $userUpdated = $this->userRepository->updateUser($data, $id);

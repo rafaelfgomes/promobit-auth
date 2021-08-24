@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\AuthService;
 use App\Service\MailerService;
 use App\Service\PasswordResetService;
+use ErrorException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,13 +56,23 @@ class AuthController extends AbstractController
     }
 
     /**
-     * @Route("/auth/logout", name="logout", methods={"GET"})
+     * @Route("/auth/register", name="register_user", methods={"POST"})
      */
-    public function logout()
+    public function store(Request $request): JsonResponse
     {
-        (new Request())->headers->remove('Authorization');
+        try {
+            $data = $request->request->all();
 
-        return new JsonResponse([ 'message' => 'Deslogado' ]);
+            $userCreated = $this->authService->store($data);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage(), Response::HTTP_BAD_REQUEST]);
+        }
+
+        if (!$userCreated) {
+            throw new ErrorException('Erro ao criar o usuário');
+        }
+
+        return new JsonResponse($userCreated, Response::HTTP_CREATED);
     }
 
     /**

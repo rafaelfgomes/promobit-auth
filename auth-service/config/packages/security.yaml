@@ -40,7 +40,5 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/v1/auth/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/auth/password/reset, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/auth/forgot-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/users, roles: IS_AUTHENTICATED_FULLY }
