@@ -1,0 +1,80 @@
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb
+    volumes: 
+      - mariadb:/var/lib/mysql
+    container_name: promobit-mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWD}"
+      MARIADB_DATABASE: "${DB_NAME}"
+      MARIADB_USER: "${DB_USER}"
+      MARIADB_PASSWORD: "${DB_USER_PASSWD}"
+    ports:
+      - "${DB_PORT}:3306"
+    networks:
+      net:
+        ipv4_address: 172.60.0.2
+
+  mongodb:
+    image: mongo
+    volumes: 
+      - mongodb:/data/db
+    container_name: promobit-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_USER_PASSWD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    ports:
+      - "${MONGO_PORT}:27017"
+    networks:
+      net:
+        ipv4_address: 172.60.0.3
+
+  api:
+    volumes: 
+      - ./auth-service:/var/www/html
+    image: promobit-api
+    container_name: promobit-api
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    depends_on:
+      - "mariadb"
+      - "mongodb"
+    networks:
+      net:
+        ipv4_address: 172.60.0.4
+
+  webserver:
+    volumes: 
+      - ./auth-service:/var/www/html
+    image: promobit-ws
+    container_name: promobit-ws
+    build: 
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - "${API_HTTP_PORT}:80"
+      - "${API_HTTPS_PORT}:443"
+    depends_on:
+      - "api"
+    networks:
+      net:
+        ipv4_address: 172.60.0.5
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.60.0.0/24
+          gateway: 172.60.0.1
+
+volumes:
+  mariadb:
+  mongodb:
