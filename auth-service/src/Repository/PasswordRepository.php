@@ -2,13 +2,13 @@
 
 namespace App\Repository;
 
-use DateTimeImmutable;
-use App\Entity\PasswordReset;
 use DateInterval;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\AST\Functions\DateDiffFunction;
+use DateTimeImmutable;
+use App\Entity\Password;
+use App\Entity\PasswordReset;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  * @method PasswordReset[]    findAll()
  * @method PasswordReset[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PasswordResetRepository extends ServiceEntityRepository
+class PasswordRepository extends ServiceEntityRepository
 {
     private $userRepository;
     private $passwordEncoder;
@@ -35,9 +35,6 @@ class PasswordResetRepository extends ServiceEntityRepository
 
         $passwordReset = $this->findOneBy([ 'hash' => $hash ]);
 
-        //dd($now, $passwordReset);
-        //dd($now > $passwordReset->getExpiresAt());
-
         if ($passwordReset) {
 
             if ($now > $passwordReset->getExpiresAt()) {
@@ -50,8 +47,7 @@ class PasswordResetRepository extends ServiceEntityRepository
                 throw new NotFoundHttpException('Usuário não encontrado');
             }
 
-            $user->setPassword($this->passwordEncoder->encodePassword($user, $newPassword));
-            $user->setUpdatedAt(new DateTimeImmutable());
+            $user->setPassword($this->passwordEncoder->encodePassword($user, $newPassword))->setUpdatedAt(new DateTimeImmutable());
 
             $this->_em->remove($passwordReset);
             $this->_em->flush();
@@ -67,11 +63,11 @@ class PasswordResetRepository extends ServiceEntityRepository
 
     public function storeHash(string $email, string $hash): void
     {
-        $passwd = new PasswordReset();
+        $passwd = new Password();
 
-        $passwd->setEmail($email);
-        $passwd->setHash($hash);
-        $passwd->setExpiresAt((new DateTimeImmutable())->add(new DateInterval('PT2H')));
+        $passwd->setEmail($email)
+                ->setHash($hash)
+                ->setExpiresAt((new DateTimeImmutable())->add(new DateInterval('PT2H')));
 
         $this->_em->persist($passwd);
         $this->_em->flush();

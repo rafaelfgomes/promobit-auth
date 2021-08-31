@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\PasswordResetRepository;
+use App\Repository\PasswordRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=PasswordResetRepository::class)
+ * @ORM\Entity(repositoryClass=PasswordRepository::class)
  * * @ORM\Table(name="`password_resets`")
  */
-class PasswordReset
+class Password
 {
     /**
      * @ORM\Id
