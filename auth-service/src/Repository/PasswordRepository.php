@@ -5,17 +5,16 @@ namespace App\Repository;
 use DateInterval;
 use DateTimeImmutable;
 use App\Entity\Password;
-use App\Entity\PasswordReset;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
- * @method PasswordReset|null find($id, $lockMode = null, $lockVersion = null)
- * @method PasswordReset|null findOneBy(array $criteria, array $orderBy = null)
- * @method PasswordReset[]    findAll()
- * @method PasswordReset[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Password|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Password|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Password[]    findAll()
+ * @method Password[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class PasswordRepository extends ServiceEntityRepository
 {
@@ -24,7 +23,7 @@ class PasswordRepository extends ServiceEntityRepository
 
     public function __construct(ManagerRegistry $registry, UserRepository $userRepository, UserPasswordEncoderInterface $passwordEncoder)
     {
-        parent::__construct($registry, PasswordReset::class);
+        parent::__construct($registry, Password::class);
         $this->userRepository = $userRepository;
         $this->passwordEncoder = $passwordEncoder;
     }
