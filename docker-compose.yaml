@@ -4,7 +4,7 @@ services:
   mariadb:
     image: mariadb
     volumes: 
-      - mariadb:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql:delegated
     container_name: promobit-mariadb
     restart: always
     environment:
@@ -19,9 +19,10 @@ services:
         ipv4_address: 172.60.0.2
 
   mongodb:
-    image: mongo
+    image: mongo:4.4.8
     volumes: 
-      - mongodb:/data/db
+      - mongodb-data:/data/db:delegated
+      - mongodbconfig-data:/data/configdb:delegated
     container_name: promobit-mongodb
     restart: always
     environment:
@@ -36,7 +37,7 @@ services:
 
   api:
     volumes: 
-      - ./auth-service:/var/www/html
+      - ./auth-service:/var/www/html:delegated
     image: promobit-api
     container_name: promobit-api
     build:
@@ -51,7 +52,7 @@ services:
 
   webserver:
     volumes: 
-      - ./auth-service:/var/www/html
+      - ./auth-service:/var/www/html:delegated
     image: promobit-ws
     container_name: promobit-ws
     build: 
@@ -65,6 +66,25 @@ services:
     networks:
       net:
         ipv4_address: 172.60.0.5
+  
+  rabbitmq:
+    image: rabbitmq:3.9.5-management-alpine
+    environment: 
+      NODENAME: broker@promobit-rabbitmq
+      CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+    volumes: 
+      - rabbitmq-data:/var/lib/rabbitmq:delegated
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    container_name: promobit-rabbitmq
+    ports:
+      - "8787:15672"
+      - "5672:5672"
+      - "25676:25676"
+    depends_on:
+      - "webserver"
+    networks:
+      net:
+        ipv4_address: 172.60.0.6
 
 networks:
   net:
@@ -76,5 +96,7 @@ networks:
           gateway: 172.60.0.1
 
 volumes:
-  mariadb:
-  mongodb:
+  mariadb-data:
+  mongodb-data:
+  mongodbconfig-data:
+  rabbitmq-data:
