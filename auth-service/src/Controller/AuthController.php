@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
+use ErrorException;
 use App\Service\AuthService;
 use App\Service\MailerService;
-use App\Service\PasswordResetService;
-use ErrorException;
+use App\Service\PasswordService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,13 +17,13 @@ class AuthController extends AbstractController
 {
     private $authService;
     private $mailerService;
-    private $passwordResetService;
+    private $passwordService;
     
-    public function __construct(AuthService $authService, MailerService $mailerService, PasswordResetService $passwordResetService)    
+    public function __construct(AuthService $authService, MailerService $mailerService, PasswordService $passwordService)    
     {
         $this->authService = $authService;
         $this->mailerService = $mailerService;
-        $this->passwordResetService = $passwordResetService;
+        $this->passwordService = $passwordService;
     }
 
     /**
@@ -107,7 +107,7 @@ class AuthController extends AbstractController
     {
         $newPassword = $request->request->get('password');
 
-        $isPasswordReseted = $this->passwordResetService->resetPassword($hash, $newPassword);
+        $isPasswordReseted = $this->passwordService->resetPassword($hash, $newPassword);
 
         if (!$isPasswordReseted) {
             $errors['error'] = [ 
