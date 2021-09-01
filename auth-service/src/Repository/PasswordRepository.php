@@ -5,6 +5,7 @@ namespace App\Repository;
 use DateInterval;
 use DateTimeImmutable;
 use App\Entity\Password;
+use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -18,13 +19,11 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class PasswordRepository extends ServiceEntityRepository
 {
-    private $userRepository;
     private $passwordEncoder;
 
-    public function __construct(ManagerRegistry $registry, UserRepository $userRepository, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $passwordEncoder)
     {
         parent::__construct($registry, Password::class);
-        $this->userRepository = $userRepository;
         $this->passwordEncoder = $passwordEncoder;
     }
 
@@ -40,7 +39,7 @@ class PasswordRepository extends ServiceEntityRepository
                 throw new NotFoundHttpException('Token expirado');
             }
 
-            $user = $this->userRepository->findOneBy([ 'email' => $passwordReset->getEmail() ]);
+            $user = $this->_em->getRepository(User::class)->findOneBy([ 'email' => $passwordReset->getEmail() ]);
 
             if (!$user) {
                 throw new NotFoundHttpException('Usuário não encontrado');

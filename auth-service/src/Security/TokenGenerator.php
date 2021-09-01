@@ -19,15 +19,6 @@ class TokenGenerator
 
     public function generate(User $user, array $payload)
     {
-        $jwtToken = $this->jwtManager->createFromPayload($user, $payload);
-
-        $tokenHash = md5($jwtToken);
-
-        $user->setApiToken($tokenHash);
-
-        $this->em->persist($user);
-        $this->em->flush();
-
-        return $jwtToken;
+        return $this->jwtManager->createFromPayload($user, $payload);
     }
 }

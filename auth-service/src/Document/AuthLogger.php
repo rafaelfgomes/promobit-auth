@@ -3,6 +3,7 @@
 namespace App\Document;
 
 use DateTime;
+use App\Repository\AuthLoggerRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -32,7 +33,7 @@ class AuthLogger
      * @MongoDB\Field(type="date")
      * @var DateTime
      */
-    private $loggedIn;
+    private $lastLoggedIn;
 
     public function getId(): ?string
     {
@@ -80,18 +81,18 @@ class AuthLogger
     /**
      * @return DateTime|null
      */
-    public function getLoggedIn(): ?DateTime
+    public function getLastLoggedIn(): ?DateTime
     {
-        return $this->loggedIn;
+        return $this->lastLoggedIn;
     }
 
     /**
      * @param DateTime $loggedIn
      * @return self
      */
-    public function setLoggedIn(DateTime $loggedIn): self
+    public function setlLastLoggedIn(DateTime $lastLoggedIn): self
     {
-        $this->loggedIn = $loggedIn;
+        $this->lastLoggedIn = $lastLoggedIn;
 
         return $this;
     }

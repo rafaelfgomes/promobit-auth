@@ -2,7 +2,9 @@
 
 namespace App\Security;
 
+use App\Document\AuthLogger;
 use App\Entity\User;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,11 +20,13 @@ class JwtAuthenticator extends AbstractGuardAuthenticator
 {
     private $em;
     private $params;
+    private $dm;
 
-    public function __construct(EntityManagerInterface $em, ContainerBagInterface $params)
+    public function __construct(EntityManagerInterface $em, DocumentManager $dm, ContainerBagInterface $params)
     {
         $this->em = $em;
         $this->params = $params;
+        $this->dm = $dm;
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
@@ -55,12 +59,15 @@ class JwtAuthenticator extends AbstractGuardAuthenticator
 
         $jwt = json_decode($tokenPayload);
 
-        $user = $this->em->getRepository(User::class)->findOneBy([ 'email' => $jwt->user ]);
+        $authLogger = $this->dm->getRepository(AuthLogger::class);
 
-        if (empty($user->getApiToken()) || $user->getApiToken() !== md5($token)) {
+        $lastToken = $authLogger->getLastLoginToken($jwt->user);
+
+        if ($lastToken !== $token) {
           throw new AuthenticationException('Token expirado');
         }
 
+        $user = $this->em->getRepository(User::class)->findOneBy([ 'email' => $jwt->user ]);
       }catch (\Exception $e) {
           throw new AuthenticationException($e->getMessage());
       }

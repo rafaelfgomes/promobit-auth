@@ -33,12 +33,6 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @ORM\Column(type="string", unique=true, nullable=true)
-     * @var string|null
-     */
-    private $apiToken;
-
-    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -143,21 +137,6 @@ class User implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getApiToken(): ?string
-    {
-        return $this->apiToken;
-    }
-
-    public function setApiToken(string $apiToken): self
-    {
-        $this->apiToken = $apiToken;
 
         return $this;
     }
