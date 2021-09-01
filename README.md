@@ -86,6 +86,10 @@ As rotas internas da api (cadastro, pesquisa, update, etc) estão protegidas e s
 
 * Para gerar o token, basta ir no endpoint de login (auth/login) e colocar o usuário e senha. A resposta será o token que precisará ser colocado no header de cada endpoint protegido.
 
+## RabbitMQ e Supervisor
+
+Para o envio do reset de senha foi adicionado o serviço do RabbitMQ. Para acessar o painel administrativo, basta acessar no navegador o endereço: `localhost:8787` e entrar com o usuário 'promobit' e a senha 'passwd'. Ao enviar o reset de senha o Rabbit já executará a fila, pois foi adicionado também o supervisor para rodar um consumer da fila em background.
+
 ## License
 
 Este projeto é licenciado pela [Licença MIT](https://opensource.org/licenses/MIT)
